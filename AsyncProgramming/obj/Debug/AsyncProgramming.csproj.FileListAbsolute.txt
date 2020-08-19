@@ -1,0 +1,7 @@
+D:\DotNet\Bezoa\AsyncProgramming\bin\Debug\AsyncProgramming.exe.config
+D:\DotNet\Bezoa\AsyncProgramming\bin\Debug\AsyncProgramming.exe
+D:\DotNet\Bezoa\AsyncProgramming\bin\Debug\AsyncProgramming.pdb
+D:\DotNet\Bezoa\AsyncProgramming\obj\Debug\AsyncProgramming.csprojAssemblyReference.cache
+D:\DotNet\Bezoa\AsyncProgramming\obj\Debug\AsyncProgramming.csproj.CoreCompileInputs.cache
+D:\DotNet\Bezoa\AsyncProgramming\obj\Debug\AsyncProgramming.exe
+D:\DotNet\Bezoa\AsyncProgramming\obj\Debug\AsyncProgramming.pdb
