@@ -4,7 +4,9 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 
@@ -14,7 +16,7 @@ namespace AsyncProgramming
     {
         private const string url = "http://www.cninnovation.com";
 
-      
+
 
         private static void AsyncApi()
         {
@@ -32,7 +34,7 @@ namespace AsyncProgramming
                     Console.WriteLine(content.Substring(0, 100));
                     Console.WriteLine("End of string");
                 }
-            Console.WriteLine("At the Bottom");
+                Console.WriteLine("At the Bottom");
             }
             Console.ReadLine();
         }
@@ -40,7 +42,7 @@ namespace AsyncProgramming
         private static void EventBasedAsynApi()
         {
             Console.WriteLine(nameof(EventBasedAsynApi));
-            using(var client =  new WebClient())
+            using (var client = new WebClient())
             {
                 client.DownloadStringCompleted += Client_DownloadStringCompleted;
                 client.DownloadStringAsync(new Uri(url));
@@ -74,7 +76,7 @@ namespace AsyncProgramming
         private static async Task TaskBasedAsyncApi()
         {
             Console.WriteLine(nameof(TaskBasedAsyncApi));
-            using(var client = new WebClient())
+            using (var client = new WebClient())
             {
                 string content = await client.DownloadStringTaskAsync(url);
                 Console.WriteLine(content.Substring(0, 100));
@@ -84,14 +86,71 @@ namespace AsyncProgramming
             //Console.ReadLine();
         }
 
+        private static void TraceThreadAndTask(string infoData)
+        {
+            string taskInfo = Task.CurrentId == null ? "no task" : $"task {Task.CurrentId}";
+            Console.WriteLine($"{infoData} in the thread {Thread.CurrentThread.ManagedThreadId} and {taskInfo}");
+        }
+
+        private static string Greeting(string name)
+        {
+            TraceThreadAndTask($"currently running {nameof(Greeting)}");
+
+            Task.Delay(3000).Wait();
+            return $"Hello, {name}";
+        }
+
+        private static Task<string> GreetingAsyc(string name)
+        {
+            return Task.Run(() =>
+            {
+                TraceThreadAndTask($"currently running {nameof(Greeting)}");
+                throw new Exception("An error occured");
+                return Greeting(name);
+            });
+        }
+
+        private async static Task callWithAsyc(string name)
+        {
+            TraceThreadAndTask($"currently running {nameof(Greeting)}");
+            string result = await GreetingAsyc(name);
+            Console.WriteLine(result);
+            TraceThreadAndTask($"ended, {nameof(callWithAsyc)}");
+        }
+
+        private static async Task simulateErrorHandling()
+        {
+            try
+            {
+                await callWithAsyc("Emmanuel");
+                Console.WriteLine("after the await \n \n \n");
+
+                var result = callWithAsyc("Emmanuel").GetAwaiter();
+                Console.WriteLine($"is completed? {result.IsCompleted}");
+                result.OnCompleted(() =>
+                {
+                    Console.WriteLine($"Is completed finally? {result.IsCompleted}");
+
+                });
+            }catch(Exception err)
+            {
+                Console.WriteLine("Something went wrong");
+            }
+        }
+
         static async Task Main(string[] args)
         {
             //SyncApi();
             //AsyncApi();
             //EventBasedAsynApi();
-            await TaskBasedAsyncApi();
-            SyncApi();
+            //await TaskBasedAsyncApi();
+            //SyncApi();
 
+
+            simulateErrorHandling();
+
+
+            Console.ReadLine();
         }
     }
 }
